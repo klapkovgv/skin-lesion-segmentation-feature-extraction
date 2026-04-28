@@ -1,9 +1,12 @@
 # skin-lesion-segmentation-feature-extraction
+
+>  This is an educational project developed during my university studies, reflecting my hands-on experience.
+
 This project is an image processing pipeline for skin lesion segmentation and feature extraction using the ISIC 2018 dataset. It covers the process from preprocessing (cropping, contrast enhancement) to ROI extraction and statistical feature calculation.
 
 ## Step 1: RGB to Grayscale Conversion
 
-For this project, I used the `isic_binary_augmented` dataset from Hugging Face. Since the images are stored as dictionaries within the dataframe, I decoded them into Numpy arrays using a custom `get_image_as_array` function. 
+For this project, I used the `isic_binary_augmented` (https://huggingface.co/ahishamm/isic_binary_augmented) dataset from Hugging Face. Since the images are stored as dictionaries within the dataframe.
 
 As the first processing step, I performed RGB to grayscale conversion using the OpenCV library with the function `cv2.cvtColor(rgb_img, cv2.COLOR_RGB2GRAY)`. This conversion reduces the image complexity from three color channels to a single intensity channel. 
 
@@ -51,8 +54,6 @@ To choose the best value for Global Thresholding, I analyzed the histograms of t
 
 The goal of thresholding is to find the minimum point between these two peaks to separate the lesion from the skin effectively. For the Global Thresholding method, I chose the value 140. I found that 140 is the optimal average of Otsu because it consistently falls into the minimum point of the histogram. 
 
-<img width="1789" height="1673" alt="2" src="https://github.com/user-attachments/assets/759fdc5e-fe62-4ff3-8b74-2cf9c0cbf66d" />
-
 For my project, I chose **Otsu Thresholding** because it provides the best balance between reducing background noise and preserving the full Region of Interest.
 
 ## Step 4: Post-Processing
@@ -60,8 +61,6 @@ For my project, I chose **Otsu Thresholding** because it provides the best balan
 We began by defining morphological transformations. These are simple operations based on the image shape, typically performed on binary images. These operations require two inputs: the original binary mask and a structuring element (kernel) which decides the nature of the operation. The two most fundamental operators are Erosion and Dilation, from which more complex forms like Opening and Closing are derived.
 
 In my project, I utilized the **Opening** morphological operation. Opening is specifically defined as erosion followed by dilation. It is the most appropriate technique here because it effectively removes small noise pixels that are detached from the main target. As described in the official OpenCV documentation, it is highly useful for noise removal using the function `cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)`. 
-
-<img width="1589" height="1736" alt="3" src="https://github.com/user-attachments/assets/906d8274-3a0c-4944-8111-6e7967e9ed73" />
 
 The underlying mechanism of **Erosion** is similar to soil erosion; it erodes away the boundaries of the foreground object (white pixels). During this process, the kernel slides through the image like a 2D convolution. A pixel in the original image is retained as a '1' only if all pixels under the kernel are '1'; otherwise, it is eroded to '0'. Consequently, all pixels near the boundary are discarded depending on the size of the kernel, decreasing the thickness of the white region. This is essential for removing small white "salt" noise and detaching objects that might be weakly connected.
 
